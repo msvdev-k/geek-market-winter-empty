@@ -1,7 +1,6 @@
 package com.geekbrains.geekmarketwinter.repositories;
 
 import com.geekbrains.geekmarketwinter.entites.FileMetaDTO;
-import com.geekbrains.geekmarketwinter.entites.ProductDTO;
 import com.geekbrains.geekmarketwinter.repositories.interfaces.IFileMetaProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,6 +20,9 @@ public class FileMetaProvider implements IFileMetaProvider {
 
     private static final String SAVE_FILE_META_DATA = "insert into vma.file_info_metadata (hash, filename, sub_type)\n" +
             "values (:hash, :finame, :subtype)";
+
+    private static final String DELETE_FILE_BY_HASH = "delete from vma.file_info_metadata where hash = :hash";
+
 
     private final Sql2o sql2o;
 
@@ -55,6 +57,15 @@ public class FileMetaProvider implements IFileMetaProvider {
             return connection.createQuery(GET_FILES_META, false)
                     .addParameter("subtype", subtype)
                     .executeAndFetch(FileMetaDTO.class);
+        }
+    }
+
+    @Override
+    public void deleteFileMeta(UUID fileHash) {
+        try (Connection connection = sql2o.open()) {
+            connection.createQuery(DELETE_FILE_BY_HASH, false)
+                    .addParameter("hash", fileHash.toString())
+                    .executeUpdate();
         }
     }
 }

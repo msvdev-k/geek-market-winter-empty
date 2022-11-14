@@ -48,5 +48,12 @@ public class FileStoreService implements IFileStoreService {
         return fileMetaProvider.getMetaFiles(subtype);
     }
 
-
+    @Override
+    public void deleteFile(UUID md5) throws IOException {
+        String filename = fileMetaProvider.checkFileExists(md5);
+        String ext = FilenameUtils.getExtension(filename);
+        String fullFileName = md5.toString() + "." + ext;
+        systemProvider.deleteFile(fullFileName);
+        fileMetaProvider.deleteFileMeta(md5);
+    }
 }
